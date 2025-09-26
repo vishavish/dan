@@ -5,8 +5,8 @@ switch (args.Length)
 {
 	case int len1 when len1 == 1:
 	case int len2 when len2 == 2:
-		if (args.Length == 2 && (!args[1].Equals("-r") && !args[1].Equals("-h"))) { ShowHelp(); return; }
-		if (args.Length == 2 && args[1].Equals("-h")) { ShowHelp(); return; }
+		if (args.Length == 2 && !args[1].Equals("-r")) { ShowHelp(); return; }
+		if (args.Length == 1 && (args[0].Equals("-h") || args[0].Equals("-r"))) { ShowHelp(); return; }
 
 		if (!Directory.Exists(args[0])) { Console.WriteLine("Directory does not exists."); return; }
 
@@ -55,7 +55,7 @@ switch (args.Length)
 void ShowHelp()
 {
 	Console.WriteLine("USAGE: dan <directory> [OPTION]");
-	Console.WriteLine("OPTION");
+	Console.WriteLine("[OPTIONS]");
 	Console.WriteLine("    -h Show this help message");
 	Console.WriteLine("    -r Search recursively");
 }
