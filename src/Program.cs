@@ -3,22 +3,19 @@ decimal total = 0M;
 int maxLength = 0;
 switch (args.Length)
 {
-	case int len1 when len1 == 1:
-	case int len2 when len2 == 2:
+	case 1:
+	case 2:
 		if (args.Length == 2 && !args[1].Equals("-r")) { ShowHelp(); return; }
 		if (args.Length == 1 && (args[0].Equals("-h") || args[0].Equals("-r"))) { ShowHelp(); return; }
 
 		if (!Directory.Exists(args[0])) { Console.WriteLine("Directory does not exists."); return; }
 
-		bool isRecursive = args.Length == 2 && args[1].Equals("-r") 
-			? true
-			: false;
+		var files = args.Length == 2 && args[1].Equals("-r")
+					? Directory.GetFiles(args[0], string.Empty, SearchOption.AllDirectories)
+					: Directory.GetFiles(args[0]);
 
-		var files = isRecursive
-			? Directory.GetFiles(args[0], string.Empty, SearchOption.AllDirectories)
-			: Directory.GetFiles(args[0]);
-
-		if(files.Length > 0) {
+		if (files.Length > 0) 
+		{
 			for (int i = 0; i < files.Length; i++)
 			{
 				FileInfo fi = new(files[i]);
@@ -41,11 +38,12 @@ switch (args.Length)
 		foreach(var kv in dirMap)
 		{
 			total += kv.Value;
-			Console.WriteLine($"[FILE TYPE]: {kv.Key.PadLeft(maxLength)} = {Math.Round(kv.Value / 1024)}Kb");
+			Console.WriteLine($"[FILE TYPE]: {kv.Key.PadLeft(maxLength)} = {GetSize(kv.Value)}");
 		} 
 
 		Console.WriteLine("=========================");
-		Console.WriteLine($"[TOTAL] = {Math.Round(total/(1024 * 1024))}Mb");
+		Console.WriteLine($"[TOTAL] = {GetSize(total)}");
+
 		break;
 	default:
 		ShowHelp();
@@ -58,4 +56,18 @@ void ShowHelp()
 	Console.WriteLine("[OPTIONS]");
 	Console.WriteLine("    -h Show this help message");
 	Console.WriteLine("    -r Search recursively");
+}
+
+string GetSize(decimal bytes)
+{
+	string[] suffix = ["bytes", "KB", "MB", "GB", "TB"];
+	decimal size = bytes;
+	int counter = 0;
+	while(size >= 1024)
+	{
+		counter++;
+		size = size / 1024;
+	}
+
+	return string.Format("{0:0.##}{1}", Math.Round(size), suffix[counter]);
 }
